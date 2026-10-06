@@ -1,0 +1,2552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AO Prototype B — Benefits-Focused Trust Bridge</title>
+<style>
+/* ===== AO DESIGN TOKENS ===== */
+:root {
+  --ao-green: #008000;
+  --ao-green-dark: #006700;
+  --ao-green-light: #e6f5e6;
+  --ao-green-bg: #d4edda;
+  --ao-green-bright: #00a600;
+  --ao-navy: #1a1a2e;
+  --ao-dark: #2c2c2c;
+  --ao-body: #333;
+  --ao-muted: #6c757d;
+  --ao-blue: #0066cc;
+  --ao-white: #fff;
+  --ao-off-white: #f5f5f5;
+  --ao-border: #e0e0e0;
+  --ao-border-light: #eee;
+  --ao-yellow: #fff3cd;
+  --ao-footer-bg: #3a3f45;
+  --ao-footer-dark: #2c2f33;
+  --ao-radius: 8px;
+  --ao-radius-lg: 12px;
+  --ao-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  --ao-shadow-lg: 0 -4px 20px rgba(0,0,0,0.15);
+  --ao-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --ao-transition: 0.35s ease;
+  --trust-bridge-height: 0px;
+}
+
+/* ===== RESET ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--ao-font);
+  background: #eaecee;
+  color: var(--ao-body);
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+/* ===== DEVICE FRAME ===== */
+.device-frame {
+  width: 400px;
+  min-height: 100vh;
+  background: var(--ao-white);
+  box-shadow: 0 0 40px rgba(0,0,0,0.12);
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ===== SCREENS ===== */
+.screen {
+  display: none;
+  flex-direction: column;
+  min-height: 100vh;
+  opacity: 0;
+  transition: opacity var(--ao-transition);
+  padding-bottom: var(--trust-bridge-height);
+}
+.screen.active {
+  display: flex;
+  opacity: 1;
+}
+
+/* ===== HEADER ===== */
+.ao-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--ao-white);
+  border-bottom: 3px solid var(--ao-green);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.ao-logo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.ao-logo svg { width: 40px; height: 32px; }
+.ao-header-nav {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.ao-header-nav a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: var(--ao-green);
+  font-size: 11px;
+  font-weight: 600;
+  gap: 2px;
+}
+.ao-header-nav a svg { width: 22px; height: 22px; }
+.ao-header-alt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--ao-white);
+  border-bottom: 3px solid var(--ao-green);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.ao-header-alt .left { display: flex; align-items: center; gap: 12px; }
+.ao-header-alt .right { display: flex; align-items: center; gap: 16px; }
+.ao-header-alt a { color: var(--ao-green); font-size: 13px; font-weight: 600; text-decoration: none; }
+
+/* ===== NAV TABS ===== */
+.ao-tabs {
+  display: flex;
+  gap: 0;
+  padding: 12px 16px 0;
+  background: var(--ao-white);
+}
+.ao-tab {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ao-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+}
+.ao-tab.active {
+  color: var(--ao-white);
+  background: var(--ao-green);
+  border-radius: 20px;
+  font-weight: 600;
+}
+.ao-tab.completed {
+  color: var(--ao-green);
+}
+.ao-tab.completed::before {
+  content: "✓ ";
+}
+.ao-step-indicator {
+  text-align: right;
+  padding: 4px 16px 8px;
+  font-size: 12px;
+  color: var(--ao-muted);
+  border-bottom: 1px solid var(--ao-border);
+}
+
+/* ===== MAIN CONTENT AREA ===== */
+.ao-content {
+  flex: 1;
+  padding: 20px 16px 32px;
+}
+.ao-content h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ao-navy);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.ao-content h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ao-navy);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.ao-content h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ao-navy);
+  margin-bottom: 4px;
+}
+.ao-content p {
+  font-size: 14px;
+  color: var(--ao-body);
+  margin-bottom: 12px;
+  line-height: 1.55;
+}
+.ao-content p.small {
+  font-size: 12px;
+  color: var(--ao-muted);
+}
+a { color: var(--ao-blue); }
+
+/* ===== FORM ELEMENTS ===== */
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ao-navy);
+  margin-bottom: 4px;
+}
+.form-group .hint {
+  font-size: 12px;
+  color: var(--ao-muted);
+  margin-bottom: 6px;
+}
+.form-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--ao-border);
+  border-radius: var(--ao-radius);
+  font-size: 14px;
+  font-family: var(--ao-font);
+  color: var(--ao-body);
+  background: var(--ao-white);
+}
+.form-input:focus {
+  outline: none;
+  border-color: var(--ao-green);
+  box-shadow: 0 0 0 2px rgba(0,128,0,0.15);
+}
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+.form-row .form-group { flex: 1; }
+
+/* Radio / Checkbox */
+.radio-group { margin-bottom: 12px; }
+.radio-option, .checkbox-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--ao-border);
+  border-radius: var(--ao-radius);
+  margin-bottom: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+.radio-option:hover, .checkbox-option:hover { border-color: var(--ao-green); }
+.radio-option.selected {
+  border-color: var(--ao-green);
+  background: var(--ao-green-light);
+}
+.radio-dot {
+  width: 20px; height: 20px;
+  border: 2px solid var(--ao-border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.radio-option.selected .radio-dot {
+  border-color: var(--ao-green);
+}
+.radio-option.selected .radio-dot::after {
+  content: "";
+  width: 10px; height: 10px;
+  background: var(--ao-green);
+  border-radius: 50%;
+}
+.check-box {
+  width: 20px; height: 20px;
+  border: 2px solid var(--ao-border);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--ao-green);
+  font-size: 14px;
+}
+.check-box.checked {
+  background: var(--ao-green);
+  border-color: var(--ao-green);
+  color: #fff;
+}
+
+/* Select */
+.form-select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--ao-border);
+  border-radius: var(--ao-radius);
+  font-size: 14px;
+  font-family: var(--ao-font);
+  color: var(--ao-body);
+  background: var(--ao-white);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' fill='none' stroke-width='2'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+/* ===== BUTTONS ===== */
+.btn-primary {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  background: var(--ao-green);
+  color: var(--ao-white);
+  border: none;
+  border-radius: var(--ao-radius-lg);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.2s;
+  font-family: var(--ao-font);
+}
+.btn-primary:hover { background: var(--ao-green-dark); }
+.btn-primary .arrow { margin-left: 8px; }
+
+.btn-outline {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  background: var(--ao-white);
+  color: var(--ao-green);
+  border: 2px solid var(--ao-green);
+  border-radius: var(--ao-radius-lg);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  font-family: var(--ao-font);
+}
+.btn-outline:hover { background: var(--ao-green-light); }
+
+/* ===== CARDS ===== */
+.card {
+  border: 1px solid var(--ao-border);
+  border-radius: var(--ao-radius);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.card-green {
+  border: 1px solid var(--ao-border);
+  border-radius: var(--ao-radius-lg);
+  padding: 16px;
+  margin-bottom: 16px;
+  border-left: 4px solid var(--ao-green);
+}
+
+/* ===== SUCCESS BANNER ===== */
+.success-banner {
+  background: var(--ao-green);
+  color: var(--ao-white);
+  padding: 20px;
+  border-radius: var(--ao-radius-lg);
+  text-align: center;
+  margin-bottom: 20px;
+}
+.success-banner h2 {
+  color: var(--ao-white);
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.success-banner .order-num {
+  font-size: 13px;
+  opacity: 0.9;
+}
+.success-banner .order-id {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+/* ===== ORDER SUMMARY ===== */
+.order-summary {
+  border: 1px solid var(--ao-border);
+  border-radius: var(--ao-radius);
+  padding: 16px;
+  margin: 16px 0;
+}
+.order-summary .plan-icon {
+  width: 36px; height: 36px;
+  background: var(--ao-green-light);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ao-green);
+  font-size: 18px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+.order-summary .plan-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.order-summary h3 { margin-bottom: 2px; }
+.order-summary .plan-desc {
+  font-size: 12px;
+  color: var(--ao-muted);
+  margin-bottom: 8px;
+}
+.price-highlight {
+  background: var(--ao-green-light);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 8px 0;
+}
+.price-highlight .member-label {
+  font-size: 12px;
+  color: var(--ao-green-dark);
+  font-weight: 600;
+}
+.price-highlight .price {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--ao-navy);
+}
+.price-highlight .price-unit {
+  font-size: 13px;
+  color: var(--ao-navy);
+}
+.save-badge {
+  display: inline-block;
+  background: #ffc107;
+  color: var(--ao-navy);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 1px solid var(--ao-border);
+  margin-top: 8px;
+}
+.total-row .label { font-size: 16px; font-weight: 700; color: var(--ao-navy); }
+.total-row .amount { text-align: right; }
+.total-row .pay-label { font-size: 12px; color: var(--ao-muted); }
+.total-row .pay-amount { font-size: 22px; font-weight: 800; color: var(--ao-navy); }
+
+/* ===== INFO BOX ===== */
+.info-box {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  background: var(--ao-off-white);
+  border-radius: var(--ao-radius);
+  margin: 16px 0;
+  align-items: flex-start;
+}
+.info-box .icon {
+  width: 32px; height: 32px;
+  background: var(--ao-green-light);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 16px;
+}
+.info-box p { margin: 0; font-size: 13px; }
+.info-box .title { font-weight: 600; color: var(--ao-navy); margin-bottom: 2px; font-size: 13px; }
+
+.info-box-blue {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  background: #e8f4fd;
+  border-radius: var(--ao-radius);
+  margin: 16px 0;
+  align-items: flex-start;
+}
+.info-box-blue .icon {
+  width: 24px;
+  flex-shrink: 0;
+  color: var(--ao-blue);
+  font-size: 18px;
+}
+.info-box-blue p { margin: 0; font-size: 13px; color: var(--ao-body); }
+
+.info-box-green {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  background: var(--ao-green-light);
+  border-radius: var(--ao-radius);
+  margin: 16px 0;
+  align-items: flex-start;
+  border-left: 3px solid var(--ao-green);
+}
+.info-box-green .icon { flex-shrink: 0; font-size: 16px; }
+.info-box-green p { margin: 0; font-size: 13px; color: var(--ao-body); }
+.info-box-green .title { font-weight: 600; color: var(--ao-navy); font-size: 13px; }
+
+/* ===== CARD PAYMENT ICONS ===== */
+.card-icons {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+.card-icon {
+  width: 40px;
+  height: 26px;
+  border: 1px solid var(--ao-border);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ao-navy);
+}
+
+/* ===== DIVIDER ===== */
+.divider {
+  height: 1px;
+  background: var(--ao-border);
+  margin: 20px 0;
+}
+.divider-thick {
+  height: 8px;
+  background: var(--ao-off-white);
+  margin: 20px -16px;
+}
+
+/* ===== DIRECT DEBIT REVIEW ===== */
+.dd-review {
+  background: var(--ao-off-white);
+  border-radius: var(--ao-radius);
+  padding: 16px;
+  margin: 16px 0;
+}
+.dd-review h3 { margin-bottom: 10px; }
+.dd-review ul { list-style: disc; padding-left: 20px; margin-bottom: 10px; }
+.dd-review li { font-size: 13px; margin-bottom: 4px; }
+
+/* ===== PAYMENT SECURITY ===== */
+.payment-security {
+  text-align: center;
+  padding: 16px;
+  margin-top: 12px;
+}
+.payment-security .title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ao-green);
+  margin-bottom: 8px;
+}
+.security-icons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+.security-icon {
+  width: 50px; height: 30px;
+  background: var(--ao-off-white);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  color: var(--ao-muted);
+}
+
+/* ===== FOOTER ===== */
+.ao-footer {
+  background: var(--ao-off-white);
+  padding: 20px 16px;
+  border-top: 1px solid var(--ao-border);
+}
+.footer-links {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.footer-links a {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ao-navy);
+  text-decoration: none;
+}
+.footer-legal {
+  font-size: 11px;
+  color: var(--ao-muted);
+  line-height: 1.5;
+  text-align: center;
+}
+.footer-legal p { margin-bottom: 8px; font-size: 11px; }
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 12px 0;
+}
+.social-icon {
+  width: 32px; height: 32px;
+  background: var(--ao-navy);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+/* ===== SEARCH BAR (confirmation pages) ===== */
+.search-bar {
+  display: flex;
+  gap: 0;
+  padding: 8px 16px 12px;
+}
+.search-bar input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid var(--ao-border);
+  border-right: none;
+  border-radius: var(--ao-radius) 0 0 var(--ao-radius);
+  font-size: 13px;
+}
+.search-bar button {
+  padding: 10px 14px;
+  background: var(--ao-green);
+  color: #fff;
+  border: none;
+  border-radius: 0 var(--ao-radius) var(--ao-radius) 0;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* Price match */
+.price-match {
+  text-align: center;
+  padding: 6px;
+  font-size: 12px;
+  color: var(--ao-muted);
+  border-bottom: 1px solid var(--ao-border);
+}
+
+/* ===== ACCESSORIES ===== */
+.accessories { margin: 16px 0; }
+.accessories h3 { color: var(--ao-green); font-weight: 700; margin-bottom: 12px; }
+.acc-grid { display: flex; gap: 12px; }
+.acc-card {
+  flex: 1;
+  border: 1px solid var(--ao-border);
+  border-radius: var(--ao-radius);
+  padding: 12px;
+  text-align: center;
+}
+.acc-card .img-placeholder {
+  width: 60px; height: 60px;
+  background: var(--ao-off-white);
+  border-radius: 8px;
+  margin: 0 auto 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+.acc-card .name { font-size: 12px; color: var(--ao-body); margin-bottom: 4px; line-height: 1.3; }
+.acc-card .stars { font-size: 11px; color: #ffc107; margin-bottom: 4px; }
+.acc-card .price { font-size: 16px; font-weight: 800; color: var(--ao-navy); margin-bottom: 6px; }
+.acc-card .link { font-size: 12px; color: var(--ao-blue); cursor: pointer; }
+
+/* ===== MARKETING UNSUBSCRIBE ===== */
+.marketing-box {
+  background: var(--ao-off-white);
+  border-radius: var(--ao-radius);
+  padding: 14px;
+  margin: 16px 0;
+  font-size: 13px;
+}
+
+/* ===== CONTRACT SUMMARY ===== */
+.contract-box {
+  background: var(--ao-off-white);
+  border-radius: var(--ao-radius);
+  padding: 16px;
+  margin: 16px 0;
+}
+.contract-box h3 { margin-bottom: 8px; }
+.contract-box p { font-size: 13px; margin-bottom: 8px; }
+.contract-link {
+  color: var(--ao-green);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+/* ===== PROTOTYPE CONTROLS (back / compare) ===== */
+.proto-controls {
+  position: fixed;
+  top: 20px;
+  left: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1500;
+}
+.ctrl-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #fff;
+  border: 1px solid var(--ao-border);
+  border-radius: 24px;
+  font-family: var(--ao-font);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ao-navy);
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.ctrl-btn:hover { border-color: var(--ao-green); color: var(--ao-green); }
+.ctrl-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.ctrl-btn.active {
+  background: var(--ao-green);
+  color: #fff;
+  border-color: var(--ao-green);
+}
+.ctrl-btn .ic { font-size: 15px; line-height: 1; }
+
+/* Re-open tab for dismissed trust bridge */
+.tb-reopen {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(100%);
+  width: 400px;
+  background: var(--ao-green);
+  color: #fff;
+  text-align: center;
+  padding: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 999;
+  border-radius: 10px 10px 0 0;
+  transition: transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.tb-reopen.visible { transform: translateX(-50%) translateY(0); }
+
+/* Dismiss (close) button inside trust bridge */
+.tb-dismiss {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: var(--ao-muted);
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px 4px;
+  z-index: 2;
+}
+.tb-dismiss:hover { color: var(--ao-navy); }
+
+/* ===== PAYMENT LOADING OVERLAY ===== */
+.pay-loader {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  max-width: 100%;
+  z-index: 3000;
+  background: linear-gradient(180deg, #f3fbf3 0%, #ffffff 55%);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+}
+.pay-loader.visible { display: flex; }
+
+/* Spinner (processing phase) */
+.pay-spinner {
+  width: 56px;
+  height: 56px;
+  border: 4px solid var(--ao-green-light);
+  border-top-color: var(--ao-green);
+  border-radius: 50%;
+  animation: paySpin 0.7s linear infinite;
+  margin-bottom: 20px;
+}
+@keyframes paySpin { to { transform: rotate(360deg); } }
+
+/* Animated success tick (done phase) */
+.pl-check {
+  width: 84px;
+  height: 84px;
+  display: none;
+  margin-bottom: 22px;
+  position: relative;
+}
+.pay-loader.done .pay-spinner { display: none; }
+.pay-loader.done .pl-check { display: block; }
+
+.pl-check svg { width: 84px; height: 84px; display: block; }
+.pl-check .pl-ring {
+  fill: none;
+  stroke: var(--ao-green);
+  stroke-width: 4;
+  stroke-dasharray: 251;
+  stroke-dashoffset: 251;
+}
+.pay-loader.done .pl-check .pl-ring {
+  animation: drawRing 0.5s ease forwards;
+}
+.pl-check .pl-tick {
+  fill: none;
+  stroke: var(--ao-green);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+}
+.pay-loader.done .pl-check .pl-tick {
+  animation: drawTick 0.35s 0.4s ease forwards;
+}
+.pl-check::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--ao-green);
+  opacity: 0;
+}
+.pay-loader.done .pl-check::after {
+  animation: pulseRing 0.8s 0.3s ease-out;
+}
+@keyframes drawRing { to { stroke-dashoffset: 0; } }
+@keyframes drawTick { to { stroke-dashoffset: 0; } }
+@keyframes pulseRing {
+  0% { transform: scale(0.6); opacity: 0.25; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+.pay-loader .pl-title {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--ao-navy);
+  margin-bottom: 6px;
+}
+.pay-loader.done .pl-title { color: var(--ao-green-dark); }
+.pay-loader .pl-sub {
+  font-size: 14px;
+  color: var(--ao-muted);
+  max-width: 270px;
+  line-height: 1.5;
+}
+.pay-loader.done .pl-title,
+.pay-loader.done .pl-sub {
+  animation: textRise 0.4s 0.3s ease both;
+}
+@keyframes textRise {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== TRUST BRIDGE (VERSION A - PROGRESS) ===== */
+.trust-bridge {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  background: var(--ao-white);
+  box-shadow: var(--ao-shadow-lg);
+  z-index: 1000;
+  transition: all 0.4s ease;
+  border-top: 3px solid var(--ao-green);
+  display: none;
+}
+.trust-bridge.visible { display: block; }
+.trust-bridge.success .tb-progress-fill { background: var(--ao-green); }
+
+.tb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 4px;
+  cursor: pointer;
+}
+.tb-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tb-check {
+  width: 24px; height: 24px;
+  background: var(--ao-green);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.tb-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ao-navy);
+}
+.tb-subtitle {
+  font-size: 12px;
+  color: var(--ao-muted);
+}
+.tb-toggle {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: var(--ao-muted);
+  cursor: pointer;
+  padding: 4px;
+  transition: transform 0.3s;
+}
+.tb-toggle.open { transform: rotate(180deg); }
+
+/* Progress bar */
+.tb-progress-bar {
+  height: 4px;
+  background: var(--ao-border);
+  margin: 8px 16px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.tb-progress-fill {
+  height: 100%;
+  background: var(--ao-green);
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+
+/* Expanded steps */
+.tb-steps {
+  padding: 4px 16px 14px;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.4s ease, padding 0.4s ease;
+}
+.tb-steps.expanded {
+  max-height: 300px;
+  padding: 8px 16px 16px;
+}
+
+.tb-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: 13px;
+  color: var(--ao-muted);
+}
+.tb-step.completed {
+  color: var(--ao-body);
+}
+.tb-step.current {
+  color: var(--ao-navy);
+  font-weight: 600;
+}
+.tb-step-icon {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+  border: 2px solid var(--ao-border);
+  color: var(--ao-muted);
+}
+.tb-step.completed .tb-step-icon {
+  background: var(--ao-green);
+  border-color: var(--ao-green);
+  color: #fff;
+}
+.tb-step.current .tb-step-icon {
+  border-color: var(--ao-green);
+  color: var(--ao-green);
+  background: var(--ao-green-light);
+}
+
+/* Success state */
+.tb-success {
+  display: none;
+  text-align: center;
+  padding: 14px 16px;
+}
+.tb-success.visible { display: block; }
+.tb-success .icon {
+  font-size: 28px;
+  margin-bottom: 4px;
+}
+.tb-success h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ao-green);
+  margin-bottom: 2px;
+}
+.tb-success p {
+  font-size: 12px;
+  color: var(--ao-muted);
+  margin: 0;
+}
+
+/* ===== SIM TYPE CARDS ===== */
+.sim-option {
+  border: 1px solid var(--ao-border);
+  border-radius: var(--ao-radius);
+  padding: 14px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  transition: border-color 0.2s;
+}
+.sim-option.selected {
+  border-color: var(--ao-green);
+  background: var(--ao-green-light);
+}
+.sim-option .dot {
+  width: 20px; height: 20px;
+  border: 2px solid var(--ao-border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.sim-option.selected .dot {
+  border-color: var(--ao-green);
+}
+.sim-option.selected .dot::after {
+  content: "✓";
+  color: var(--ao-green);
+  font-size: 12px;
+  font-weight: 700;
+}
+.sim-option .sim-info h4 { font-size: 14px; font-weight: 600; color: var(--ao-navy); margin-bottom: 2px; }
+.sim-option .sim-info p { font-size: 12px; color: var(--ao-muted); margin: 0; }
+.sim-badge {
+  display: inline-block;
+  background: var(--ao-green);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+/* ===== INSURANCE SPECIFIC ===== */
+.insurance-header {
+  background: var(--ao-green-light);
+  border-left: 3px solid var(--ao-green);
+  padding: 10px 14px;
+  border-radius: 0 var(--ao-radius) var(--ao-radius) 0;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ao-navy);
+}
+.insurance-header .icon { font-size: 16px; color: var(--ao-blue); }
+
+.ao-care-card {
+  border: 1px solid var(--ao-border);
+  border-radius: var(--ao-radius-lg);
+  padding: 20px;
+  margin: 16px 0;
+  text-align: left;
+}
+.ao-care-card .brand {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--ao-green);
+  margin-bottom: 2px;
+}
+.ao-care-card .brand-sub {
+  font-size: 13px;
+  color: var(--ao-muted);
+}
+.ao-care-card .ao-price {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--ao-navy);
+  margin: 8px 0 2px;
+}
+.ao-care-card .ao-price-sub {
+  font-size: 13px;
+  color: var(--ao-muted);
+}
+.ao-care-card .customer-name {
+  font-size: 14px;
+  margin-top: 8px;
+  color: var(--ao-body);
+}
+.ao-care-card .customer-addr {
+  font-size: 13px;
+  color: var(--ao-muted);
+}
+
+/* Direct Debit header */
+.dd-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 16px 0 12px;
+}
+.dd-header h2 { margin: 0; }
+.dd-logo {
+  width: 40px;
+  height: 24px;
+  background: var(--ao-off-white);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  color: var(--ao-muted);
+}
+
+/* Policy documents */
+.policy-checkboxes { margin: 16px 0; }
+.policy-check {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.policy-check .box {
+  width: 18px; height: 18px;
+  border: 2px solid var(--ao-border);
+  border-radius: 3px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ===== CONFIRMATION PAGE MULTI-BANNER ===== */
+.multi-success {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.multi-success .success-banner {
+  margin-bottom: 0;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+.multi-success .success-banner .banner-icon {
+  width: 40px; height: 40px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.multi-success .success-banner .banner-text h2 {
+  font-size: 15px;
+  margin-bottom: 0;
+}
+.multi-success .success-banner .banner-text .order-num {
+  font-size: 11px;
+}
+
+/* ===== SCREEN TRANSITION ===== */
+.screen-enter { animation: fadeIn 0.35s ease forwards; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== MISC ===== */
+.text-green { color: var(--ao-green); }
+.text-bold { font-weight: 700; }
+.text-navy { color: var(--ao-navy); }
+.mt-8 { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.mb-8 { margin-bottom: 8px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-0 { margin-bottom: 0; }
+.pt-0 { padding-top: 0; }
+
+/* Link style */
+.link-green { color: var(--ao-green); font-weight: 600; text-decoration: none; cursor: pointer; font-size: 13px; }
+.link-green:hover { text-decoration: underline; }
+
+/* ===== TRUST BRIDGE B — BENEFITS FOCUSED ===== */
+.tb-benefit {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px 8px;
+}
+.tb-benefit-icon {
+  width: 36px; height: 36px;
+  background: var(--ao-green-light);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.tb-benefit-text { flex: 1; }
+.tb-benefit-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ao-navy);
+  line-height: 1.3;
+}
+.tb-benefit-sub {
+  font-size: 12px;
+  color: var(--ao-muted);
+  line-height: 1.4;
+}
+.tb-benefit-sub strong { color: var(--ao-green-dark); }
+
+/* Secondary mini progress (benefits version keeps progress subtle) */
+.tb-mini-progress {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px 10px;
+}
+.tb-mini-dots {
+  display: flex;
+  gap: 5px;
+  flex: 1;
+}
+.tb-mini-dot {
+  height: 5px;
+  flex: 1;
+  background: var(--ao-border);
+  border-radius: 3px;
+  transition: background 0.5s ease;
+}
+.tb-mini-dot.done { background: var(--ao-green); }
+.tb-mini-dot.active {
+  background: var(--ao-green);
+  opacity: 0.5;
+}
+.tb-mini-label {
+  font-size: 11px;
+  color: var(--ao-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Expandable benefit detail / steps */
+.tb-expand {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.4s ease;
+  background: var(--ao-off-white);
+}
+.tb-expand.open { max-height: 360px; }
+.tb-expand-inner { padding: 12px 16px 16px; }
+.tb-expand-inner .bene-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--ao-body);
+  padding: 5px 0;
+}
+.tb-expand-inner .bene-row .tick { color: var(--ao-green); font-weight: 700; flex-shrink: 0; }
+
+.tb-expand-inner .mini-steps {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--ao-border);
+}
+.tb-expand-inner .mini-steps-label {
+  font-size: 11px;
+  color: var(--ao-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+.tb-mini-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  padding: 4px 0;
+  color: var(--ao-muted);
+}
+.tb-mini-step.done { color: var(--ao-body); }
+.tb-mini-step.now { color: var(--ao-navy); font-weight: 600; }
+.tb-mini-step .ms-icon {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ao-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  flex-shrink: 0;
+}
+.tb-mini-step.done .ms-icon { background: var(--ao-green); border-color: var(--ao-green); color: #fff; }
+.tb-mini-step.now .ms-icon { border-color: var(--ao-green); color: var(--ao-green); }
+
+.tb-toggle-b {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: var(--ao-muted);
+  cursor: pointer;
+  padding: 4px;
+  transition: transform 0.3s;
+}
+.tb-toggle-b.open { transform: rotate(180deg); }
+</style>
+</head>
+<body>
+
+<!-- External prototype controls -->
+<div class="proto-controls">
+  <button class="ctrl-btn" id="startOverBtn" onclick="startOver()"><span class="ic">↺</span> Start over</button>
+</div>
+
+<div class="device-frame" id="app">
+
+  <!-- Payment processing loader -->
+  <div class="pay-loader" id="payLoader">
+    <div class="pay-spinner"></div>
+    <div class="pl-check">
+      <svg viewBox="0 0 92 92" xmlns="http://www.w3.org/2000/svg">
+        <circle class="pl-ring" cx="46" cy="46" r="40"/>
+        <path class="pl-tick" d="M28 47 L41 60 L65 33"/>
+      </svg>
+    </div>
+    <div class="pl-title" id="plTitle">Processing your payment…</div>
+    <div class="pl-sub" id="plSub">Securely confirming your order. This'll just take a moment.</div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SCREEN 1: PAYMENT PAGE                                       -->
+  <!-- ============================================================ -->
+  <div class="screen active" id="screen-1" data-step="0">
+
+    <!-- Header -->
+    <div class="ao-header">
+      <div class="ao-logo">
+        <svg viewBox="0 0 60 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="18" cy="18" r="14" fill="#008000"/>
+          <text x="12" y="24" font-size="18" font-weight="800" fill="#fff">a</text>
+          <circle cx="40" cy="18" r="14" fill="#008000"/>
+          <text x="33" y="24" font-size="18" font-weight="800" fill="#fff">o</text>
+          <path d="M18 35 Q30 42 42 35" stroke="#008000" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="ao-header-nav">
+        <a href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>
+          Account
+        </a>
+        <a href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h12M3 10h18M3 15h12M3 20h18"/></svg>
+          Help
+        </a>
+        <a href="#" style="position:relative;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 9H7.5z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>
+          <span style="position:absolute;top:-4px;right:-6px;background:red;color:#fff;width:16px;height:16px;border-radius:50%;font-size:9px;display:flex;align-items:center;justify-content:center;">1</span>
+          Basket
+        </a>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="ao-content">
+      <h1>Complete your upfront payment</h1>
+      <p>Pay £39.95 now using a UK-issued Visa or Mastercard debit or credit card. Use a card registered to the same address as your AO Finance account.</p>
+
+      <h3 class="mb-8">Please select a payment method</h3>
+
+      <div class="radio-group">
+        <div class="radio-option selected" onclick="this.parentNode.querySelectorAll('.radio-option').forEach(r=>r.classList.remove('selected'));this.classList.add('selected')">
+          <div class="radio-dot"></div>
+          Debit Card
+        </div>
+        <div class="radio-option" onclick="this.parentNode.querySelectorAll('.radio-option').forEach(r=>r.classList.remove('selected'));this.classList.add('selected')">
+          <div class="radio-dot"></div>
+          Credit Card
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h2>Your Debit Card details</h2>
+
+        <div class="form-group mt-16">
+          <label>Card Number</label>
+          <p class="small mb-0">16 digits card number printed on the front of the card. We can only accept 16 digit card numbers</p>
+          <input type="text" class="form-input mt-8" placeholder="0000 0000 0000 0000" value="4111 1111 1111 1111">
+        </div>
+
+        <div class="card-icons">
+          <div class="card-icon" style="background:#1a1f71;color:#fff;font-size:9px;font-weight:800;font-style:italic;">VISA</div>
+          <div class="card-icon" style="background:#fff;">
+            <svg width="28" height="18" viewBox="0 0 28 18">
+              <circle cx="10" cy="9" r="8" fill="#eb001b" opacity="0.8"/>
+              <circle cx="18" cy="9" r="8" fill="#f79e1b" opacity="0.8"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Expiry Date</label>
+          <p class="small">Expiration date located on the front of the card, format mm/yy</p>
+          <input type="text" class="form-input" placeholder="MM/YY" value="12/27" style="width:120px;">
+        </div>
+
+        <div class="form-group">
+          <label>CVV/Security code</label>
+          <p class="small">3 digit number located on the signature strip on the back of the card</p>
+          <input type="text" class="form-input" placeholder="000" value="123" style="width:100px;">
+        </div>
+      </div>
+
+      <div class="info-box">
+        <div class="icon">📱</div>
+        <div>
+          <p class="title">This payment is for your phone.</p>
+          <p>Remember to continue to the next stage to order your AO Mobile SIM.</p>
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="goToScreen(2)" style="margin-top:16px;">
+        Pay £39.95 now
+      </button>
+
+      <div style="margin-top:24px; padding-top:16px; border-top:8px solid var(--ao-off-white);">
+        <p class="small" style="line-height:1.6;">*Calls are charged at a standard national rate. Call costs from mobiles and other operators may vary so please check before calling. Our lines are open 9am to 7pm Monday to Friday, 9am to 5pm Saturday, 10am to 4pm Sunday. Calls may be recorded and monitored for training and security purposes and to help us manage your account.</p>
+        <p class="small" style="margin-top:12px;line-height:1.6;"><a href="#" style="color:var(--ao-blue);font-size:12px;">ao.com</a> is operated by AO Retail Limited, registered in England with company number 03914998 whose registered office is at 5a, The Parklands, Lostock, Bolton, BL6 4SD.</p>
+        <p class="small" style="margin-top:8px;line-height:1.6;">Credit is provided by NewDay Ltd, 7 Handyside Street, London, N1C 4DA. <strong>AO Retail Limited acts as a credit broker for NewDay Ltd on an exclusive basis and is not a lender.</strong> NewDay Ltd and AO Retail Limited are each authorised and regulated by the Financial Conduct Authority. Credit is available only to UK residents aged 18 and over. Subject to status. Terms apply.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SCREEN 2: HANDSET ORDER CONFIRMATION                         -->
+  <!-- ============================================================ -->
+  <div class="screen" id="screen-2" data-step="1">
+
+    <div class="ao-header-alt">
+      <div class="left">
+        <svg viewBox="0 0 60 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="32">
+          <circle cx="18" cy="18" r="14" fill="#008000"/>
+          <text x="12" y="24" font-size="18" font-weight="800" fill="#fff">a</text>
+          <circle cx="40" cy="18" r="14" fill="#008000"/>
+          <text x="33" y="24" font-size="18" font-weight="800" fill="#fff">o</text>
+          <path d="M18 35 Q30 42 42 35" stroke="#008000" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </svg>
+        <a href="#">Menu</a>
+      </div>
+      <div class="right">
+        <a href="#">Hi, John</a>
+        <a href="#" style="position:relative;">
+          Basket
+          <span style="position:absolute;top:-8px;right:-8px;background:red;color:#fff;width:16px;height:16px;border-radius:50%;font-size:9px;display:flex;align-items:center;justify-content:center;">0</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" placeholder="Search products, brands or advice">
+      <button>🔍</button>
+    </div>
+
+    <div class="price-match">© Price match promise</div>
+
+    <div class="ao-content">
+      <div class="success-banner">
+        <h2>Handset order complete</h2>
+        <div class="order-num">Order number:</div>
+        <div class="order-id">AOL456789</div>
+      </div>
+
+      <h1>Thanks John, your order has been confirmed!</h1>
+      <h2>Your order number is AOL456</h2>
+
+      <p style="margin-top:12px;">We've received your <strong>payment of £34.95</strong> and we're getting your order ready to go! Your finance agreement has been set up at <strong>£14.79 for 24 months</strong>. We'll send your confirmation email to foo@bar.com</p>
+
+      <ul style="margin: 12px 0 16px 8px; list-style: none;">
+        <li style="padding: 4px 0; font-size: 14px;"><span style="color:var(--ao-green);margin-right:8px;">●</span>Estimated delivery within 3-5 days</li>
+        <li style="padding: 4px 0; font-size: 14px;"><span style="color:var(--ao-green);margin-right:8px;">●</span>Delivery to <strong>5a, The Parklands, Lostock, Bolton, BL6 4SD.</strong></li>
+      </ul>
+
+      <div class="marketing-box">
+        <p style="margin:0;font-size:13px;">We've signed you up to receive marketing. If you don't want to receive these messages, you can <a href="#">unsubscribe</a>.</p>
+        <p style="margin:8px 0 0;font-size:13px;">For more information on how we use your data read our <a href="#">privacy policy</a>.</p>
+      </div>
+
+      <div class="accessories">
+        <p style="font-size:14px;margin-bottom:4px;">We think you'll like these</p>
+        <h3>Phones accessories</h3>
+        <div class="acc-grid">
+          <div class="acc-card">
+            <div class="img-placeholder">🔌</div>
+            <div class="name">AO 45 Watt USB-C Charger for Mobile Phone - White</div>
+            <div class="stars">★★★★☆ 4.7/5</div>
+            <div class="price">£27</div>
+            <div class="link">View details</div>
+          </div>
+          <div class="acc-card">
+            <div class="img-placeholder">🔋</div>
+            <div class="name">AO 15 Watt USB Wireless Charging Pad</div>
+            <div class="stars" style="color:var(--ao-muted);">☆☆☆☆☆ Not Yet Reviewed</div>
+            <div class="price">£25</div>
+            <div class="link">View details</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA to continue to data plan -->
+      <button class="btn-primary mt-16" onclick="goToScreen(3)">
+        Continue to Data Plan setup <span class="arrow">→</span>
+      </button>
+    </div>
+
+    <div class="ao-footer">
+      <div class="footer-links">
+        <a href="#">Contact us</a><a href="#">Help &amp; advice</a>
+        <a href="#">About us</a><a href="#">Privacy</a>
+        <a href="#">Cookies</a><a href="#">Our services</a>
+        <a href="#">Track your order</a><a href="#">My account</a>
+        <a href="#">AO Care</a>
+      </div>
+      <div class="divider" style="margin:12px 0;"></div>
+      <div class="footer-links">
+        <a href="#">Terms and Conditions</a><a href="#">Careers</a>
+        <a href="#">AO at Home</a><a href="#">Modern Slavery Statement</a>
+        <a href="#">Affiliates</a><a href="#">Sponsorships</a>
+        <a href="#">Corporate</a>
+      </div>
+      <div class="social-icons mt-16">
+        <a href="#" class="social-icon">📷</a>
+        <a href="#" class="social-icon">f</a>
+        <a href="#" class="social-icon">♪</a>
+        <a href="#" class="social-icon">▶</a>
+        <a href="#" class="social-icon">✕</a>
+        <a href="#" class="social-icon">P</a>
+      </div>
+      <div class="footer-legal mt-16">
+        <p>ao.com is operated by AO Retail Limited, registered in England with company number 03914998 whose registered office is at 5a, The Parklands, Lostock, Bolton, BL6 4SD</p>
+        <p>The goods you buy from this site will be purchased from AO Retail Limited</p>
+        <p>Credit is provided by NewDay Ltd, 7 Handyside Street, London, N1C 4DA. <strong>AO Retail Limited acts as a credit broker for NewDay Ltd on an exclusive basis and is not a lender.</strong> NewDay Ltd and AO Retail Limited are each authorised and regulated by the Financial Conduct Authority. Credit is available only to UK residents aged 18 and over. Subject to status. Terms apply.</p>
+        <p style="margin-top:8px;">Unique Cookies Reference: 9KK-XGT-XJR</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SCREEN 3: DATA PLAN DETAILS                                  -->
+  <!-- ============================================================ -->
+  <div class="screen" id="screen-3" data-step="2">
+
+    <div class="ao-header">
+      <div class="ao-logo">
+        <svg viewBox="0 0 60 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="32">
+          <circle cx="18" cy="18" r="14" fill="#008000"/>
+          <text x="12" y="24" font-size="18" font-weight="800" fill="#fff">a</text>
+          <circle cx="40" cy="18" r="14" fill="#008000"/>
+          <text x="33" y="24" font-size="18" font-weight="800" fill="#fff">o</text>
+          <path d="M18 35 Q30 42 42 35" stroke="#008000" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="ao-header-nav">
+        <a href="#">Account</a>
+        <a href="#">Help</a>
+        <a href="#" style="position:relative;">Basket <span style="position:absolute;top:-8px;right:-8px;background:red;color:#fff;width:14px;height:14px;border-radius:50%;font-size:8px;display:flex;align-items:center;justify-content:center;">1</span></a>
+      </div>
+    </div>
+
+    <div class="ao-content">
+      <h1>About you</h1>
+
+      <div class="form-group">
+        <label>Email address:</label>
+        <div style="font-size:14px;font-weight:600;color:var(--ao-navy);padding:4px 0;">john.smith@email.com</div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Title*</label>
+          <select class="form-select"><option>Mr</option></select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>First name*</label>
+          <input type="text" class="form-input" value="John">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Last name*</label>
+        <input type="text" class="form-input" value="Smith">
+      </div>
+
+      <div class="form-group">
+        <label>Date of birth*</label>
+        <div class="form-row">
+          <div class="form-group"><input type="text" class="form-input" placeholder="DD"></div>
+          <div class="form-group"><input type="text" class="form-input" placeholder="MM"></div>
+          <div class="form-group"><input type="text" class="form-input" placeholder="YYYY"></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Contact number*</label>
+        <input type="text" class="form-input" placeholder="" value="">
+      </div>
+
+      <div class="divider-thick"></div>
+
+      <h2>Your number</h2>
+      <p>Whether you're keeping your old number or starting fresh, the process couldn't be easier.</p>
+      <a href="#" class="link-green">Here's what you need to do ▾</a>
+
+      <div class="form-group mt-16">
+        <p class="mb-8" style="font-size:14px;">Would you like us to transfer your number from another network?</p>
+        <div class="form-row">
+          <button class="btn-outline" style="flex:1;padding:10px;">Yes</button>
+          <button class="btn-outline" style="flex:1;padding:10px;background:var(--ao-off-white);">No</button>
+        </div>
+      </div>
+
+      <div class="form-group mt-8">
+        <label>Choose your Spend Cap amount</label>
+        <select class="form-select"><option>£5</option><option>£10</option><option>£20</option></select>
+      </div>
+
+      <a href="#" class="link-green">What is a spend cap? ▾</a>
+
+      <div class="divider-thick"></div>
+
+      <h2>Choose your SIM type</h2>
+      <p><a href="#" class="link-green">Which is right for me?</a></p>
+
+      <div class="sim-option selected">
+        <div class="dot"></div>
+        <div class="sim-info">
+          <div class="sim-badge">Physical SIM</div>
+          <h4>Physical SIM</h4>
+          <p>A standard plastic SIM delivered via Royal Mail within 1-2 working days.</p>
+        </div>
+      </div>
+
+      <div class="sim-option">
+        <div class="dot"></div>
+        <div class="sim-info">
+          <h4>eSIM</h4>
+          <p>A digital SIM delivered straight to your inbox within minutes.</p>
+          <a href="#" class="link-green" style="font-size:12px;">Check device compatibility</a>
+        </div>
+      </div>
+
+      <div class="divider-thick"></div>
+
+      <div class="contract-box">
+        <h3>Contract summary</h3>
+        <p>Your contract summary contains a breakdown of your offer to ensure you can make an informed decision about your purchase. We recommend you download the document(s) for your future needs.</p>
+        <a href="#" class="contract-link">AO Mobile Contract Summary</a>
+        <div class="checkbox-option mt-8" style="border:none;padding:8px 0;">
+          <div class="check-box">✓</div>
+          <span style="font-size:13px;">I have read and understood the contract summary document.</span>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:8px;">
+        <div class="icon">🔒</div>
+        <div>
+          <p class="title">Your details are safe &amp; secure</p>
+          <p>See how your data is used in our <a href="#">privacy policy</a>.</p>
+        </div>
+      </div>
+
+      <button class="btn-primary mt-16" onclick="goToScreen(4)">
+        Continue to payment <span class="arrow">→</span>
+      </button>
+
+      <div class="info-box-blue mt-16">
+        <div class="icon">ℹ️</div>
+        <p>If you require any of your contract documents in an accessible format then once you've completed your purchase, please contact us on 01204 672626 or [email address] and we'll be happy to help.</p>
+      </div>
+
+      <div class="divider-thick"></div>
+
+      <h2>Order summary</h2>
+
+      <div class="order-summary">
+        <div class="plan-header">
+          <div class="plan-icon">📶</div>
+          <div>
+            <h3>Ultimate 500GB</h3>
+            <div class="plan-desc">30-day rolling plan, SIM-only<br>Unlimited UK minutes &amp; texts<br>Quantity: 1</div>
+          </div>
+        </div>
+
+        <div class="price-highlight">
+          <div class="member-label">AO member price</div>
+          <div class="price">£12<span class="price-unit">/month</span></div>
+          <div class="save-badge">Save £6 per month</div>
+          <div style="font-size:12px;color:var(--ao-muted);margin-top:4px;">Non-member price £18/month</div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:8px;">
+          <span>Delivery</span><span>Free</span>
+        </div>
+
+        <div class="total-row">
+          <div class="label">Total</div>
+          <div class="amount">
+            <div class="pay-label">Pay monthly</div>
+            <div class="pay-amount">£12</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ao-footer">
+      <div class="footer-legal">
+        <p>ao.com is operated by AO Retail Limited, registered in England with company number 03914998 whose registered office is at 5a, The Parklands, Lostock, Bolton, BL6 4SD.</p>
+        <p style="margin-top:4px;">Unique Cookies Reference: BXD-898-TTT</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SCREEN 4: DATA PLAN ID CHECK / PAYMENT                      -->
+  <!-- ============================================================ -->
+  <div class="screen" id="screen-4" data-step="2">
+
+    <div class="ao-header">
+      <div class="ao-logo">
+        <svg viewBox="0 0 60 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="32">
+          <circle cx="18" cy="18" r="14" fill="#008000"/>
+          <text x="12" y="24" font-size="18" font-weight="800" fill="#fff">a</text>
+          <circle cx="40" cy="18" r="14" fill="#008000"/>
+          <text x="33" y="24" font-size="18" font-weight="800" fill="#fff">o</text>
+          <path d="M18 35 Q30 42 42 35" stroke="#008000" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="ao-header-nav">
+        <a href="#">Account</a>
+        <a href="#">Help</a>
+        <a href="#" style="position:relative;">Basket <span style="position:absolute;top:-8px;right:-8px;background:red;color:#fff;width:14px;height:14px;border-radius:50%;font-size:8px;display:flex;align-items:center;justify-content:center;">1</span></a>
+      </div>
+    </div>
+
+    <div class="ao-content">
+      <h2 style="color:var(--ao-green);">Credit/Debit card details</h2>
+      <p>This is to verify your ID and to keep your order secure we'll run a quick 1p card check, instantly refunded back to you.</p>
+
+      <div class="form-group">
+        <label>Card number*</label>
+        <input type="text" class="form-input" placeholder="" value="4111 1111 1111 1111">
+      </div>
+
+      <div class="form-group">
+        <label>Expiry date*</label>
+        <div class="form-row">
+          <input type="text" class="form-input" placeholder="MM" value="12">
+          <input type="text" class="form-input" placeholder="YY" value="27">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Security code*</label>
+        <p class="small">3 digits at the back of your card</p>
+        <input type="text" class="form-input" placeholder="" value="123" style="width:100px;">
+      </div>
+
+      <div class="divider-thick"></div>
+
+      <div class="dd-review">
+        <h3>Review Direct Debit details</h3>
+        <p>Please check your details before placing your order:</p>
+        <ul>
+          <li>Account Holder: [Customer's Name]</li>
+          <li>Account Number: [XXXXXXX]</li>
+          <li>Sort Code: [XX-XX-XX]</li>
+        </ul>
+        <a href="#" class="link-green">Edit</a>
+        <p style="margin-top:10px;font-size:12px;">Direct Debits will be collected under Service User Number 439182 (APS Re AO Mobile). We'll send you a confirmation of your Direct Debit setup by SMS.</p>
+        <p style="margin-top:8px;font-size:12px;">By continuing you confirm that your details are correct and authorise AO Mobile to set up this Direct Debit.</p>
+        <div style="display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:8px 12px;border:1px solid var(--ao-border);border-radius:var(--ao-radius);cursor:pointer;">
+          <span>🖨️</span> Print details
+        </div>
+        <p style="margin-top:10px;font-size:12px;color:var(--ao-muted);">For any support please call 01204 672626 or [email address].</p>
+      </div>
+
+      <div class="divider-thick"></div>
+
+      <h2>Order summary</h2>
+
+      <div class="order-summary">
+        <div class="plan-header">
+          <div class="plan-icon">📶</div>
+          <div>
+            <h3>Ultimate 500GB</h3>
+            <div class="plan-desc">30-day SIM-only calling plan<br>Unlimited UK minutes &amp; texts<br>Quantity: 1</div>
+          </div>
+        </div>
+
+        <div class="price-highlight">
+          <div class="member-label">AO member price</div>
+          <div class="price">£12<span class="price-unit">/month</span></div>
+          <div class="save-badge">Save £6 per month</div>
+          <div style="font-size:12px;color:var(--ao-muted);margin-top:4px;">Non-member price £18/month</div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:8px;">
+          <span>Delivery</span><span>Free</span>
+        </div>
+
+        <div class="total-row">
+          <div class="label">Total</div>
+          <div class="amount">
+            <div class="pay-label">Pay monthly</div>
+            <div class="pay-amount">£12</div>
+          </div>
+        </div>
+
+        <p class="small mt-8">Your first bill may be slightly higher — this covers the days before your regular monthly billing kicks in.</p>
+      </div>
+
+      <div class="info-box" style="margin-top:12px;">
+        <div class="icon">✓</div>
+        <div>
+          <p style="margin:0;font-size:13px;">By placing this order, you agree to our <a href="#">T&amp;Cs</a>.<br>See how your data is used in our <a href="#">privacy policy</a>.</p>
+        </div>
+      </div>
+
+      <div class="info-box-green" style="margin-top:12px;">
+        <div class="icon">📱</div>
+        <div>
+          <p class="title">This payment is for your data plan.</p>
+          <p>Remember to continue to the next stage to order your AO Care phone insurance.</p>
+        </div>
+      </div>
+
+      <button class="btn-primary mt-16" onclick="processPayment(5, 'data')">
+        🔒 Confirm order and pay
+      </button>
+
+      <div class="payment-security mt-16">
+        <div class="title">Payment Security</div>
+        <div class="security-icons">
+          <div class="security-icon">VISA</div>
+          <div class="security-icon">MC</div>
+          <div class="security-icon">ID Check</div>
+          <div class="security-icon">Safekey</div>
+        </div>
+        <p class="small mt-8">For added safety, you might need to verify your purchase with MasterCard SecureCode, Verified by Visa or American Express Safekey.</p>
+      </div>
+    </div>
+
+    <div class="ao-footer">
+      <div class="footer-legal">
+        <p>ao.com is operated by AO Retail Limited, registered in England with company number 03914998 whose registered office is at 5a, The Parklands, Lostock, Bolton, BL6 4SD.</p>
+        <p style="margin-top:4px;">Unique Cookies Reference: BXD-898-TTT</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SCREEN 5: DATA PLAN ORDER CONFIRMATION                      -->
+  <!-- ============================================================ -->
+  <div class="screen" id="screen-5" data-step="2">
+
+    <div class="ao-header-alt">
+      <div class="left">
+        <svg viewBox="0 0 60 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="32">
+          <circle cx="18" cy="18" r="14" fill="#008000"/>
+          <text x="12" y="24" font-size="18" font-weight="800" fill="#fff">a</text>
+          <circle cx="40" cy="18" r="14" fill="#008000"/>
+          <text x="33" y="24" font-size="18" font-weight="800" fill="#fff">o</text>
+          <path d="M18 35 Q30 42 42 35" stroke="#008000" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </svg>
+        <a href="#">Menu</a>
+      </div>
+      <div class="right">
+        <a href="#">Hi, John</a>
+        <a href="#">Basket</a>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" placeholder="Search products, brands or advice">
+      <button>🔍</button>
+    </div>
+
+    <div class="price-match">© Price match promise</div>
+
+    <div class="ao-content">
+      <div class="success-banner">
+        <h2>Data plan order complete</h2>
+        <div class="order-num">Order number:</div>
+        <div class="order-id">AOL456789</div>
+      </div>
+
+      <h1>Thanks John, your order has been confirmed!</h1>
+      <h2>Your order number is AOL456</h2>
+
+      <p style="margin-top:12px;">We've received your <strong>payment of £34.95</strong> and we're getting your order ready to go! Your finance agreement has been set up at <strong>£14.79 for 24 months</strong>. We'll send your confirmation email to foo@bar.com</p>
+
+      <ul style="margin: 12px 0 16px 8px; list-style: none;">
+        <li style="padding: 4px 0; font-size: 14px;"><span style="color:var(--ao-green);margin-right:8px;">●</span>Estimated delivery within 3-5 days</li>
+        <li style="padding: 4px 0; font-size: 14px;"><span style="color:var(--ao-green);margin-right:8px;">●</span>Delivery to <strong>5a, The Parklands, Lostock, Bolton, BL6 4SD.</strong></li>
+      </ul>
+
+      <div class="marketing-box">
+        <p style="margin:0;font-size:13px;">We've signed you up to receive marketing. If you don't want to receive these messages, you can <a href="#">unsubscribe</a>.</p>
+        <p style="margin:8px 0 0;font-size:13px;">For more information on how we use your data read our <a href="#">privacy policy</a>.</p>
+      </div>
+
+      <div class="accessories">
+        <p style="font-size:14px;margin-bottom:4px;">We think you'll like these</p>
+        <h3>Phones accessories</h3>
+        <div class="acc-grid">
+          <div class="acc-card">
+            <div class="img-placeholder">🔌</div>
+            <div class="name">AO 45 Watt USB-C Charger for Mobile Phone - White</div>
+            <div class="stars">★★★★☆ 4.7/5</div>
+            <div class="price">£27</div>
+            <div class="link">View details</div>
+          </div>
+          <div class="acc-card">
+            <div class="img-placeholder">🔋</div>
+            <div class="name">AO 15 Watt USB Wireless Charging Pad</div>
+            <div class="stars" style="color:var(--ao-muted);">☆☆☆☆☆ Not Yet Reviewed</div>
+            <div class="price">£25</div>
+            <div class="link">View details</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-primary mt-16" onclick="goToScreen(6)">
+        Continue to Insurance setup <span class="arrow">→</span>
+      </button>
+    </div>
+
+    <div class="ao-footer">
+      <div class="footer-links">
+        <a href="#">Contact us</a><a href="#">Help &amp; advice</a>
+        <a href="#">About us</a><a href="#">Privacy</a>
+        <a href="#">Cookies</a><a href="#">Our services</a>
+        <a href="#">Track your order</a><a href="#">My account</a>
+        <a href="#">AO Care</a>
+      </div>
+      <div class="footer-legal mt-16">
+        <p>ao.com is operated by AO Retail Limited. Credit is provided by NewDay Ltd. Terms apply.</p>
+        <p style="margin-top:4px;">Unique Cookies Reference: 9KK-XGT-XJR</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SCREEN 6: INSURANCE SETUP                                    -->
+  <!-- ============================================================ -->
+  <div class="screen" id="screen-6" data-step="3">
+
+    <div class="ao-header">
+      <div class="ao-logo">
+        <svg viewBox="0 0 60 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="32">
+          <circle cx="18" cy="18" r="14" fill="#008000"/>
+          <text x="12" y="24" font-size="18" font-weight="800" fill="#fff">a</text>
+          <circle cx="40" cy="18" r="14" fill="#008000"/>
+          <text x="33" y="24" font-size="18" font-weight="800" fill="#fff">o</text>
+          <path d="M18 35 Q30 42 42 35" stroke="#008000" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="ao-header-nav">
+        <a href="#">Account</a>
+        <a href="#">Help</a>
+        <a href="#" style="position:relative;">Basket <span style="position:absolute;top:-8px;right:-8px;background:red;color:#fff;width:14px;height:14px;border-radius:50%;font-size:8px;display:flex;align-items:center;justify-content:center;">1</span></a>
+      </div>
+    </div>
+
+    <div class="ao-content">
+
+      <div class="insurance-header">
+        <div class="icon">ℹ️</div>
+        <div>
+          <strong>This is your last payment step</strong><br>
+          <span style="font-size:12px;color:var(--ao-muted);">Some warm copy to complement it</span>
+        </div>
+      </div>
+
+      <h1>Let's set up your AO Care Mobile Insurance</h1>
+      <p>Set up your monthly payments so you can protect the device that matters the most.</p>
+
+      <div class="ao-care-card">
+        <div class="brand">AO Care</div>
+        <div class="ao-price">£5.00</div>
+        <div class="ao-price-sub">a month</div>
+        <div class="customer-name" style="margin-top:12px;"><strong>Mr John Smith</strong></div>
+        <div class="customer-addr">123 Westgate, London, PE16 876</div>
+      </div>
+
+      <div class="dd-header">
+        <h2>Direct Debit payment</h2>
+        <div class="dd-logo">DD</div>
+      </div>
+
+      <div class="form-group">
+        <label>Name of account holder</label>
+        <input type="text" class="form-input" value="">
+      </div>
+
+      <div class="form-group">
+        <label>Account number</label>
+        <input type="text" class="form-input" value="">
+      </div>
+
+      <div class="form-group">
+        <label>Sort code</label>
+        <input type="text" class="form-input" value="" style="width:140px;">
+      </div>
+
+      <div class="form-group">
+        <label>What day of the month would you like to make your payments?</label>
+        <select class="form-select"><option>Select</option><option>1st</option><option>15th</option><option>28th</option></select>
+      </div>
+
+      <p class="small">If you experience any issues with your payment, please contact us — you can find our details in the <a href="#">Policy Terms and Conditions</a>.</p>
+
+      <div class="divider-thick"></div>
+
+      <h2 style="color:var(--ao-green);">Cover start date</h2>
+      <p style="font-size:13px;">Cover starts on the scheduled delivery date of your product. The start date will be shown in the certificate you receive after purchase.</p>
+      <p style="font-size:13px;">The policies provide continuous cover, so payments will be taken monthly for as long as you like. If your chosen payment date is within the first 14 days from the start of the policy, your first payment will NOT be taken on your nominated payment date but will instead be taken around 14 days after the policy starts. Subsequent payments will be taken on your nominated payment date.</p>
+
+      <div class="divider-thick"></div>
+
+      <h3>Instruction to your bank or building society to pay by Direct Debit</h3>
+      <p style="font-size:12px;margin-top:8px;">Service User Number 997050. All Direct Debits are protected by the <a href="#">Direct Debit Guarantee</a>. Your Direct Debit instruction will be confirmed to you by email within 14 working days prior to the first collection — as long as that takes place within the first month. Your protection is provided by Domestic &amp; General Insurance PLC, which will show on your bank statements as D&amp;G.</p>
+
+      <div class="divider-thick"></div>
+
+      <h3>Your policy documents</h3>
+
+      <div class="policy-checkboxes">
+        <div class="policy-check">
+          <div class="box"></div>
+          <span>You'll receive your policy documents by email. If you need a paper copy as well, tick here</span>
+        </div>
+        <div class="policy-check">
+          <div class="box"></div>
+          <span>I confirm that I am the account holder, that these bank details are correct and that I am the only person required to authorise debits from this account.</span>
+        </div>
+      </div>
+
+      <button class="btn-primary mt-16" onclick="processPayment(7, 'insurance')">
+        Complete AO Care payment <span class="arrow">→</span>
+      </button>
+    </div>
+
+    <div class="ao-footer">
+      <div class="footer-legal">
+        <p>ao.com is operated by AO Retail Limited, registered in England with company number 03914998 whose registered office is at 5a, The Parklands, Lostock, Bolton, BL6 4SD.</p>
+        <p style="margin-top:4px;">Unique Cookies Reference: BXD-898-TTT</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SCREEN 7: FINAL COMBINED CONFIRMATION                       -->
+  <!-- ============================================================ -->
+  <div class="screen" id="screen-7" data-step="4">
+
+    <div class="ao-header-alt">
+      <div class="left">
+        <svg viewBox="0 0 60 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="32">
+          <circle cx="18" cy="18" r="14" fill="#008000"/>
+          <text x="12" y="24" font-size="18" font-weight="800" fill="#fff">a</text>
+          <circle cx="40" cy="18" r="14" fill="#008000"/>
+          <text x="33" y="24" font-size="18" font-weight="800" fill="#fff">o</text>
+          <path d="M18 35 Q30 42 42 35" stroke="#008000" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </svg>
+        <a href="#">Menu</a>
+      </div>
+      <div class="right">
+        <a href="#">Hi, John</a>
+        <a href="#">Basket</a>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" placeholder="Search products, brands or advice">
+      <button>🔍</button>
+    </div>
+
+    <div class="price-match">© Price match promise</div>
+
+    <div class="ao-content">
+
+      <div class="multi-success">
+        <div class="success-banner">
+          <div class="banner-icon">📱</div>
+          <div class="banner-text">
+            <h2>Handset order complete</h2>
+            <div class="order-num">Order number: <strong>AOL456789</strong></div>
+          </div>
+        </div>
+        <div class="success-banner">
+          <div class="banner-icon">📶</div>
+          <div class="banner-text">
+            <h2>Data Plan order complete</h2>
+            <div class="order-num">Order number: <strong>AOL456789</strong></div>
+          </div>
+        </div>
+        <div class="success-banner">
+          <div class="banner-icon">🛡️</div>
+          <div class="banner-text">
+            <h2>Insurance order complete</h2>
+            <div class="order-num">Order number: <strong>AOL456789</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <h1>Thanks John, your order has been confirmed!</h1>
+      <h2>Your order number is AOL456</h2>
+
+      <p style="margin-top:12px;">We've received your <strong>payment of £34.95</strong> and we're getting your order ready to go! Your finance agreement has been set up at <strong>£14.79 for 24 months</strong>. We'll send your confirmation email to foo@bar.com</p>
+
+      <ul style="margin: 12px 0 16px 8px; list-style: none;">
+        <li style="padding: 4px 0; font-size: 14px;"><span style="color:var(--ao-green);margin-right:8px;">●</span>Estimated delivery within 3-5 days</li>
+        <li style="padding: 4px 0; font-size: 14px;"><span style="color:var(--ao-green);margin-right:8px;">●</span>Delivery to <strong>5a, The Parklands, Lostock, Bolton, BL6 4SD.</strong></li>
+      </ul>
+
+      <div class="marketing-box">
+        <p style="margin:0;font-size:13px;">We've signed you up to receive marketing. If you don't want to receive these messages, you can <a href="#">unsubscribe</a>.</p>
+        <p style="margin:8px 0 0;font-size:13px;">For more information on how we use your data read our <a href="#">privacy policy</a>.</p>
+      </div>
+
+      <div class="accessories">
+        <p style="font-size:14px;margin-bottom:4px;">We think you'll like these</p>
+        <h3>Phones accessories</h3>
+        <div class="acc-grid">
+          <div class="acc-card">
+            <div class="img-placeholder">🔌</div>
+            <div class="name">AO 45 Watt USB-C Charger for Mobile Phone - White</div>
+            <div class="stars">★★★★☆ 4.7/5</div>
+            <div class="price">£27</div>
+            <div class="link">View details</div>
+          </div>
+          <div class="acc-card">
+            <div class="img-placeholder">🔋</div>
+            <div class="name">AO 15 Watt USB Wireless Charging Pad</div>
+            <div class="stars" style="color:var(--ao-muted);">☆☆☆☆☆ Not Yet Reviewed</div>
+            <div class="price">£25</div>
+            <div class="link">View details</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ao-footer">
+      <div class="footer-links">
+        <a href="#">Contact us</a><a href="#">Help &amp; advice</a>
+        <a href="#">About us</a><a href="#">Privacy</a>
+        <a href="#">Cookies</a><a href="#">Our services</a>
+        <a href="#">Track your order</a><a href="#">My account</a>
+        <a href="#">AO Care</a>
+      </div>
+      <div class="divider" style="margin:12px 0;"></div>
+      <div class="footer-links">
+        <a href="#">Terms and Conditions</a><a href="#">Careers</a>
+        <a href="#">AO at Home</a><a href="#">Modern Slavery Statement</a>
+        <a href="#">Affiliates</a><a href="#">Sponsorships</a>
+        <a href="#">Corporate</a>
+      </div>
+      <div class="social-icons mt-16">
+        <a href="#" class="social-icon">📷</a>
+        <a href="#" class="social-icon">f</a>
+        <a href="#" class="social-icon">♪</a>
+        <a href="#" class="social-icon">▶</a>
+        <a href="#" class="social-icon">✕</a>
+        <a href="#" class="social-icon">P</a>
+      </div>
+      <div class="footer-legal mt-16">
+        <p>ao.com is operated by AO Retail Limited, registered in England with company number 03914998. The goods you buy from this site will be purchased from AO Retail Limited.</p>
+        <p style="margin-top:8px;">Credit is provided by NewDay Ltd, 7 Handyside Street, London, N1C 4DA. <strong>AO Retail Limited acts as a credit broker for NewDay Ltd on an exclusive basis and is not a lender.</strong> Terms apply.</p>
+        <p style="margin-top:8px;">Unique Cookies Reference: 9KK-XGT-XJR</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- TRUST BRIDGE: VERSION B — BENEFITS FOCUSED                  -->
+  <!-- ============================================================ -->
+  <div class="trust-bridge" id="trustBridge">
+
+    <button class="tb-dismiss" id="tbDismiss" onclick="dismissTrustBridge(event)" title="Hide">✕</button>
+
+    <!-- Normal state -->
+    <div id="tbNormal">
+      <div class="tb-benefit" onclick="toggleTrustBridge()">
+        <div class="tb-benefit-icon" id="tbBeneIcon">📶</div>
+        <div class="tb-benefit-text">
+          <div class="tb-benefit-title" id="tbBeneTitle">Data Plan · Step 2 of 4</div>
+          <div class="tb-benefit-sub" id="tbBeneSub">Save £6/month on unlimited data as an AO member</div>
+        </div>
+        <button class="tb-toggle-b" id="tbToggle">▲</button>
+      </div>
+
+      <!-- Secondary subtle progress -->
+      <div class="tb-mini-progress">
+        <div class="tb-mini-dots" id="tbMiniDots">
+          <div class="tb-mini-dot done"></div>
+          <div class="tb-mini-dot active"></div>
+          <div class="tb-mini-dot"></div>
+          <div class="tb-mini-dot"></div>
+        </div>
+        <div class="tb-mini-label" id="tbMiniLabel">Step 2 of 4</div>
+      </div>
+
+      <!-- Expandable: benefits + secondary step detail -->
+      <div class="tb-expand" id="tbExpand">
+        <div class="tb-expand-inner">
+          <div id="tbBeneList">
+            <div class="bene-row"><span class="tick">✓</span><span><strong>£6/month saving</strong> with your exclusive AO member price</span></div>
+            <div class="bene-row"><span class="tick">✓</span><span>Unlimited UK minutes &amp; texts, 500GB data</span></div>
+            <div class="bene-row"><span class="tick">✓</span><span>30-day rolling plan — no long tie-in</span></div>
+          </div>
+          <div class="mini-steps">
+            <div class="mini-steps-label">Your journey</div>
+            <div class="tb-mini-step done" id="tbMs1"><span class="ms-icon">✓</span> Phone Purchased</div>
+            <div class="tb-mini-step now" id="tbMs2"><span class="ms-icon">2</span> Data Plan Setup</div>
+            <div class="tb-mini-step" id="tbMs3"><span class="ms-icon">3</span> Insurance Setup</div>
+            <div class="tb-mini-step" id="tbMs4"><span class="ms-icon">4</span> Complete Order</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success state -->
+    <div class="tb-success" id="tbSuccess">
+      <div class="icon">🛡️</div>
+      <h3>Fully protected &amp; connected</h3>
+      <p>Phone, data &amp; AO Care — everything's covered for peace of mind.</p>
+    </div>
+  </div>
+
+  <!-- Re-open tab (shows when trust bridge dismissed) -->
+  <div class="tb-reopen" id="tbReopen" onclick="reopenTrustBridge()">
+    <span>💷</span> Show my member savings
+  </div>
+
+</div>
+
+<script>
+// ===== PROTOTYPE B — BENEFITS FOCUSED TRUST BRIDGE =====
+// Progress tracking still exists but is SECONDARY to the benefit/value messaging.
+
+let currentScreen = 1;
+let tbExpanded = false;
+let history = [1];
+let tbDismissed = false;
+
+const STEPS = {
+  // screenNum: { icon, title, sub (benefit copy), completedSteps[], currentStep, miniLabel, benefits[] }
+  1: { show: false },
+
+  // STEP 2 — DATA PLAN (screens 3 & 4). Title names the section explicitly.
+  2: {
+    icon: '📶',
+    title: 'Data Plan · Step 2 of 4',
+    sub: 'Save £6/month on unlimited data as an AO member',
+    completedSteps: [1], currentStep: 2, miniLabel: 'Step 2 of 4',
+    benefits: [
+      '<strong>£6/month saving</strong> with your exclusive AO member price',
+      'Unlimited UK minutes &amp; texts, 500GB data',
+      '30-day rolling plan — no long tie-in'
+    ]
+  },
+  3: {
+    icon: '📶',
+    title: 'Data Plan · Step 2 of 4',
+    sub: 'Just £12/month — that\'s £6 less than non-members',
+    completedSteps: [1], currentStep: 2, miniLabel: 'Step 2 of 4',
+    benefits: [
+      '<strong>£12/month</strong> AO member price (save £6)',
+      'Keep your number or start fresh — easy switch',
+      'Physical SIM delivered in 1-2 working days'
+    ]
+  },
+  4: {
+    icon: '📶',
+    title: 'Data Plan · Step 2 of 4',
+    sub: 'Secure 1p check, instantly refunded — still saving £6/month',
+    completedSteps: [1], currentStep: 2, miniLabel: 'Step 2 of 4',
+    benefits: [
+      '1p verification check — <strong>instantly refunded</strong>',
+      'Direct Debit protected by the Direct Debit Guarantee',
+      'Still saving £6/month vs non-member price'
+    ]
+  },
+
+  // STEP 3 — INSURANCE (screens 5 & 6). Section switches to Insurance.
+  5: {
+    icon: '🛡️',
+    title: 'Insurance · Step 3 of 4',
+    sub: 'Add AO Care and protect the device that matters most',
+    completedSteps: [1, 2], currentStep: 3, miniLabel: 'Step 3 of 4',
+    benefits: [
+      'Protect against accidental damage &amp; breakdown',
+      '<strong>Peace of mind</strong> from just £5/month',
+      'All in one bundle — one simple checkout'
+    ]
+  },
+  6: {
+    icon: '🛡️',
+    title: 'Insurance · Step 3 of 4',
+    sub: 'Protect your device for just £5/month with AO Care',
+    completedSteps: [1, 2], currentStep: 3, miniLabel: 'Step 3 of 4',
+    benefits: [
+      '<strong>£5/month</strong> AO Care Mobile Insurance',
+      'Continuous cover — cancel any time you like',
+      'Backed by Domestic &amp; General Insurance'
+    ]
+  },
+  7: {
+    success: true
+  }
+};
+
+// ===== PAYMENT PROCESSING TRANSITION =====
+const PAY_COPY = {
+  data: {
+    processing: { title: 'Processing your data plan…', sub: 'Securely confirming your SIM-only order. This\'ll just take a moment.' },
+    done:       { title: 'Data plan confirmed', sub: 'That\'s your connectivity sorted. One quick step to go — your cover.' }
+  },
+  insurance: {
+    processing: { title: 'Setting up your AO Care cover…', sub: 'Confirming your Direct Debit and protection. Nearly there.' },
+    done:       { title: 'Insurance confirmed', sub: 'You\'re fully protected. Finishing up your complete order…' }
+  }
+};
+
+function processPayment(nextScreen, type) {
+  const loader = document.getElementById('payLoader');
+  const copy = PAY_COPY[type] || PAY_COPY.data;
+
+  loader.classList.remove('done');
+  document.getElementById('plTitle').textContent = copy.processing.title;
+  document.getElementById('plSub').textContent = copy.processing.sub;
+  loader.classList.add('visible');
+
+  // Brief processing pause, then play the success animation
+  setTimeout(() => {
+    loader.classList.add('done');
+    document.getElementById('plTitle').textContent = copy.done.title;
+    document.getElementById('plSub').textContent = copy.done.sub;
+  }, 700);
+
+  // Let the success animation land, then advance
+  setTimeout(() => {
+    loader.classList.remove('visible');
+    loader.classList.remove('done');
+    goToScreen(nextScreen);
+  }, 1600);
+}
+
+function goToScreen(num, isBack) {
+  const current = document.getElementById('screen-' + currentScreen);
+  if (current) {
+    current.classList.remove('active');
+    current.classList.remove('screen-enter');
+  }
+
+  if (!isBack) {
+    history.push(num);
+  }
+
+  currentScreen = num;
+  const next = document.getElementById('screen-' + num);
+  if (next) {
+    next.classList.add('active');
+    next.classList.add('screen-enter');
+    next.scrollTop = 0;
+    window.scrollTo(0, 0);
+  }
+
+  updateBackButton();
+  updateTrustBridge(num);
+}
+
+function startOver() {
+  // Return to the landing page that shows both prototypes
+  window.location.href = '../index.html';
+}
+
+function updateBackButton() {
+  // "Start over" is always available (no-op kept for call compatibility)
+}
+
+// ===== DISMISSIBLE TRUST BRIDGE =====
+function dismissTrustBridge(e) {
+  if (e) e.stopPropagation();
+  tbDismissed = true;
+  const bridge = document.getElementById('trustBridge');
+  const reopen = document.getElementById('tbReopen');
+  bridge.classList.remove('visible');
+  document.documentElement.style.setProperty('--trust-bridge-height', '0px');
+  if (currentScreen !== 1) reopen.classList.add('visible');
+}
+
+function reopenTrustBridge() {
+  tbDismissed = false;
+  document.getElementById('tbReopen').classList.remove('visible');
+  updateTrustBridge(currentScreen);
+}
+
+function updateTrustBridge(screenNum) {
+  const bridge = document.getElementById('trustBridge');
+  const reopen = document.getElementById('tbReopen');
+  const cfg = STEPS[screenNum];
+
+  // Hide on the payment screen (bridge appears only after phone payment)
+  if (screenNum === 1 || !cfg || cfg.show === false) {
+    bridge.classList.remove('visible');
+    reopen.classList.remove('visible');
+    document.documentElement.style.setProperty('--trust-bridge-height', '0px');
+    return;
+  }
+
+  // If dismissed, keep hidden and show the re-open tab
+  if (tbDismissed) {
+    bridge.classList.remove('visible');
+    reopen.classList.add('visible');
+    document.documentElement.style.setProperty('--trust-bridge-height', '0px');
+    return;
+  }
+
+  reopen.classList.remove('visible');
+  bridge.classList.add('visible');
+  document.documentElement.style.setProperty('--trust-bridge-height', '128px');
+
+  const tbNormal = document.getElementById('tbNormal');
+  const tbSuccess = document.getElementById('tbSuccess');
+
+  // Success state (final screen)
+  if (cfg.success) {
+    tbNormal.style.display = 'none';
+    tbSuccess.classList.add('visible');
+    bridge.classList.add('success');
+    document.documentElement.style.setProperty('--trust-bridge-height', '96px');
+    return;
+  }
+
+  tbNormal.style.display = 'block';
+  tbSuccess.classList.remove('visible');
+  bridge.classList.remove('success');
+
+  // Primary: benefit messaging
+  document.getElementById('tbBeneIcon').textContent = cfg.icon;
+  document.getElementById('tbBeneTitle').innerHTML = cfg.title;
+  document.getElementById('tbBeneSub').innerHTML = cfg.sub;
+
+  // Secondary: subtle progress dots
+  const dots = document.querySelectorAll('#tbMiniDots .tb-mini-dot');
+  dots.forEach((dot, idx) => {
+    const stepNum = idx + 1;
+    dot.className = 'tb-mini-dot';
+    if (cfg.completedSteps && cfg.completedSteps.includes(stepNum)) {
+      dot.classList.add('done');
+    } else if (cfg.currentStep === stepNum) {
+      dot.classList.add('active');
+    }
+  });
+  document.getElementById('tbMiniLabel').textContent = cfg.miniLabel;
+
+  // Expandable benefit list
+  if (cfg.benefits) {
+    const list = cfg.benefits.map(b =>
+      '<div class="bene-row"><span class="tick">✓</span><span>' + b + '</span></div>'
+    ).join('');
+    document.getElementById('tbBeneList').innerHTML = list;
+  }
+
+  // Expandable mini-steps (secondary progress detail)
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById('tbMs' + i);
+    el.className = 'tb-mini-step';
+    if (cfg.completedSteps && cfg.completedSteps.includes(i)) {
+      el.className = 'tb-mini-step done';
+    } else if (cfg.currentStep === i) {
+      el.className = 'tb-mini-step now';
+    }
+  }
+}
+
+function toggleTrustBridge() {
+  const expand = document.getElementById('tbExpand');
+  const toggle = document.getElementById('tbToggle');
+
+  tbExpanded = !tbExpanded;
+
+  if (tbExpanded) {
+    expand.classList.add('open');
+    toggle.classList.add('open');
+  } else {
+    expand.classList.remove('open');
+    toggle.classList.remove('open');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateBackButton();
+  updateTrustBridge(1);
+});
+</script>
+
+</body>
+</html>

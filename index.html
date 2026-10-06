@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AO Trust Bridge Prototypes</title>
+<style>
+:root {
+  --ao-green: #008000;
+  --ao-green-dark: #006700;
+  --ao-navy: #1a1a2e;
+  --ao-muted: #6c757d;
+  --ao-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--ao-font);
+  background: #eaecee;
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 20px;
+}
+.logo svg { width: 70px; height: 48px; margin-bottom: 16px; }
+h1 { font-size: 28px; color: var(--ao-navy); margin-bottom: 8px; text-align: center; }
+.sub { color: var(--ao-muted); font-size: 15px; margin-bottom: 36px; text-align: center; max-width: 560px; line-height: 1.5; }
+.cards { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; max-width: 760px; }
+.card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  padding: 28px;
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  border-top: 4px solid var(--ao-green);
+}
+.card .tag {
+  display: inline-block;
+  background: #e6f5e6;
+  color: var(--ao-green-dark);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 14px;
+  align-self: flex-start;
+}
+.card h2 { font-size: 20px; color: var(--ao-navy); margin-bottom: 8px; }
+.card p { font-size: 14px; color: var(--ao-muted); line-height: 1.55; margin-bottom: 16px; flex: 1; }
+.card ul { list-style: none; margin-bottom: 20px; }
+.card li { font-size: 13px; padding: 4px 0; color: #444; }
+.card li::before { content: "✓ "; color: var(--ao-green); font-weight: 700; }
+.card a {
+  display: block;
+  text-align: center;
+  padding: 14px;
+  background: var(--ao-green);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  transition: background 0.2s;
+}
+.card a:hover { background: var(--ao-green-dark); }
+.footnote { margin-top: 36px; font-size: 12px; color: var(--ao-muted); text-align: center; max-width: 560px; line-height: 1.6; }
+</style>
+</head>
+<body>
+  <div class="logo">
+    <svg viewBox="0 0 60 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="18" cy="18" r="14" fill="#008000"/>
+      <text x="12" y="24" font-size="18" font-weight="800" fill="#fff">a</text>
+      <circle cx="40" cy="18" r="14" fill="#008000"/>
+      <text x="33" y="24" font-size="18" font-weight="800" fill="#fff">o</text>
+      <path d="M18 36 Q30 44 42 36" stroke="#008000" stroke-width="3" fill="none" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <h1>AO Trust Bridge Prototypes</h1>
+  <p class="sub">Two clickable prototypes exploring a persistent "trust bridge" that carries customers from a completed phone purchase through the data plan and insurance checkout journeys. Both are faithful to the AO design language.</p>
+
+  <div class="cards">
+    <div class="card">
+      <span class="tag">Version A</span>
+      <h2>Progress &amp; Completion</h2>
+      <p>The trust bridge reinforces momentum. It leads with reassurance, a visible progress bar, and a clear step tracker so the customer always feels how close they are to the finish line.</p>
+      <ul>
+        <li>Progress bar &amp; step indicators front and centre</li>
+        <li>"Just 2 quick steps left" momentum copy</li>
+        <li>Completed steps become visually confirmed</li>
+        <li>Celebratory success state at 100%</li>
+      </ul>
+      <a href="prototype-a/index.html">Open Prototype A →</a>
+    </div>
+
+    <div class="card">
+      <span class="tag">Version B</span>
+      <h2>Benefits &amp; Value</h2>
+      <p>The trust bridge leads with value — savings, protection, convenience, and peace of mind. Progress tracking is still present, but kept secondary beneath the benefit messaging.</p>
+      <ul>
+        <li>Benefit &amp; savings messaging up front</li>
+        <li>Bundle &amp; peace-of-mind copy per screen</li>
+        <li>Subtle secondary progress dots</li>
+        <li>Expandable detail with benefits + journey</li>
+      </ul>
+      <a href="prototype-b/index.html">Open Prototype B →</a>
+    </div>
+  </div>
+
+  <p class="footnote">Journey: Phone Payment → Handset Confirmation → Data Plan Details → Data Plan Checkout → Data Plan Confirmation → Insurance Setup → Final Combined Confirmation. The trust bridge appears after phone payment and persists across every subsequent screen, updating progress as the customer advances.</p>
+</body>
+</html>
